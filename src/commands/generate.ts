@@ -1,5 +1,7 @@
 import inquirer from "inquirer";
 
+import { readOpenApiFile } from "../openapi/loader.js";
+
 export async function generateRoutes() {
   const response = await inquirer.prompt([
     {
@@ -25,5 +27,11 @@ export async function generateRoutes() {
     },
   ]);
 
-  console.log(response);
+  try {
+    const openapi = await readOpenApiFile(response.file_path);
+    console.log({ ...response, openapi });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(message);
+  }
 }
