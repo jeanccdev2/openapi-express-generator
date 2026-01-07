@@ -11,6 +11,7 @@ type CreateProjectOptions = {
   use: "Projeto Completo" | "Projeto Simples";
   file_types: FileTypes[];
   orm: "TypeORM" | "Sequelize" | "Prisma";
+  file_path: string;
 };
 
 export async function createProject() {
@@ -47,6 +48,11 @@ export async function createProject() {
             answers.file_types &&
             (answers.file_types.includes("Repositories") ||
               answers.file_types.includes("Models"))),
+      },
+      {
+        type: "input",
+        name: "file_path",
+        message: "Caminho do arquivo",
       },
     ]);
 
