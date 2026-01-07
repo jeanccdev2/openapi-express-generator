@@ -9,6 +9,6 @@ export class ExampleEntity extends BaseEntity {
   name!: string;
 }
 
-export type CreateExampleEntityInterface = DeepPartial<ExampleEntity>;
+export type CreateExampleEntity = DeepPartial<ExampleEntity>;
 
-export type UpdateExampleEntityInterface = Partial<CreateExampleEntityInterface>;
+export type UpdateExampleEntity = Partial<CreateExampleEntity>;
