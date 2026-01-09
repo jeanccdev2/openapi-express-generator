@@ -10,7 +10,7 @@
     "paths": {
       "@/*": ["./src/*"],
       "@config/*": ["./src/config/*"],
-      "@database/*": ["./src/database/*"],
+      "@database/*": ["src/database_typeorm/*"],
       "@shared/*": ["./src/shared/*"],
       "@example/*": ["./src/modules/example/*"],
     },

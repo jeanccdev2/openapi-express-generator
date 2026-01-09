@@ -7,8 +7,8 @@ import {
   type ZodTypeProvider,
 } from "fastify-type-provider-zod";
 import mainRouter from "@/routes.js";
-import { AppDataSource } from "@database/data-source.js";
 import { errorHandler } from "./helpers/error-handler.js";
+import { initDatabase } from "./database/database.js";
 
 Fastify({
   logger: true,
@@ -19,10 +19,5 @@ Fastify({
   .setErrorHandler(errorHandler)
   .register(mainRouter)
   .listen({ port: ENV.PORT });
-await AppDataSource.initialize()
-  .then(() => {
-    console.log("Database connected");
-  })
-  .catch((err) => {
-    console.log("Error connecting to database", err);
-  });
+
+initDatabase();

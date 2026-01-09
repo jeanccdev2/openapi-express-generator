@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { AppDataSource } from "@database/data-source.js";
+import { database } from "@/database_typeorm/database.js";
 import fs from "fs";
 
 type Command = "create" | "run" | "revert" | "show";
@@ -7,7 +7,7 @@ type Command = "create" | "run" | "revert" | "show";
 async function main() {
   const command = (process.argv[2] as Command | undefined) ?? "run";
 
-  const dataSource = await AppDataSource.initialize();
+  const dataSource = await database.initialize();
 
   try {
     if (command === "create") {

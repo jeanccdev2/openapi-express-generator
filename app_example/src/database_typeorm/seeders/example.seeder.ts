@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 import type { DataSource } from "typeorm";
-import { ExampleEntity } from "@example/entities/example.entity.js";
+import { ExampleEntity } from "@/modules/example/entities_typeorm/example.entity.js";
 import type { Seeder, SeederContext, SeederRunOptions } from "@/types/seeder.types.js";
 
 export const ExampleSeeder: Seeder = {

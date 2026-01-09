@@ -1,6 +1,6 @@
 import "reflect-metadata";
-import { AppDataSource } from "@database/data-source.js";
-import { SEEDERS } from "@/database/seeders/index.js";
+import { database } from "@/database_typeorm/database.js";
+import { SEEDERS } from "@/database_typeorm/seeders/index.js";
 
 type Command = "list" | "run" | "clear" | "refresh";
 
@@ -30,7 +30,7 @@ async function main() {
   const seederName = parseName(process.argv);
   const count = parseCount(process.argv);
 
-  const dataSource = await AppDataSource.initialize();
+  const dataSource = await database.initialize();
 
   try {
     if (command === "list") {

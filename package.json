@@ -10,7 +10,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "start": "tsc && npx backend-generator generate"
+    "create": "tsc && npx backend-generator create",
+    "generate": "tsc && npx backend-generator generate"
   },
   "keywords": [],
   "author": "",

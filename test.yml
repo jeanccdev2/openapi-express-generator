@@ -7,6 +7,13 @@ servers:
 paths:
   /test:
     get:
+      parameters:
+        - name: name
+          schema:
+            type: string
+          in: query
+          required: true
+          description: Name
       responses:
         '200':
           description: OK
