@@ -101,22 +101,24 @@ export async function createFullProjectFlow(orm: ORM) {
 }
 
 function copyFile(file: FileFolder) {
+  console.log("file", file);
   const srcPath = path.join(appExamplePath, ...file.path, file.name);
 
   if (file.type === "file") {
     const destPath = path.join(appGeneratedPath, ...file.path, file.name);
+    console.log("srcPath", srcPath);
+    console.log("destPath", destPath);
     fs.mkdirSync(path.dirname(destPath), { recursive: true });
     return fs.copyFileSync(srcPath, destPath);
   }
 
   if (file.type === "folder") {
-    console.log(srcPath);
     const dirFiles = fs.readdirSync(srcPath);
     for (const dirFile of dirFiles) {
       copyFile({
         name: dirFile,
         type: dirFile.includes(".") ? "file" : "folder",
-        path: [...file.path, dirFile],
+        path: [...file.path, file.name],
       });
     }
   }
