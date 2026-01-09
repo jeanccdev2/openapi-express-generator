@@ -1,16 +1,12 @@
+import { createFullProjectFlow } from "../flows/create.flow.js";
+import type { FileTypes } from "../types/file-types.js";
+import type { ORM } from "../types/orm.js";
 import inquirer from "inquirer";
 
-type FileTypes =
-  | "Routes"
-  | "Controllers"
-  | "Services"
-  | "Repositories"
-  | "Models";
-
-type CreateProjectOptions = {
+export type CreateProjectOptions = {
   use: "Projeto Completo" | "Projeto Simples";
   file_types: FileTypes[];
-  orm: "TypeORM" | "Sequelize" | "Prisma";
+  orm: ORM;
   file_path: string;
 };
 
@@ -49,12 +45,9 @@ export async function createProject() {
             (answers.file_types.includes("Repositories") ||
               answers.file_types.includes("Models"))),
       },
-      {
-        type: "input",
-        name: "file_path",
-        message: "Caminho do arquivo",
-      },
     ]);
 
-  console.log(response);
+  if (response.use === "Projeto Completo") {
+    await createFullProjectFlow(response.orm);
+  }
 }

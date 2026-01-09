@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { createProject } from "./commands/create.js";
-import { generateRoutes } from "./commands/generate.js";
+import { createProject } from "./commands/create.command.js";
+import { generateRoutes } from "./commands/generate.command.js";
 
 const args = process.argv.slice(2);
 
