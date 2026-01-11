@@ -1,11 +1,30 @@
+import type { CreateProjectOptions } from "@/commands/create.command.js";
 import type { ORM } from "@/types/orm.js";
 import fs, { Dirent } from "fs";
 import path from "path";
 
-const appExamplePath = path.join(process.cwd(), "app_example");
-const appGeneratedPath = path.join(process.cwd(), "app_generated");
+function copyFile(projectName: string, orm: ORM, relativePath: string[]) {
+  const srcPath = path.join(appExamplePath, ...relativePath);
+  const destPath = path
+    .join(appGeneratedPath, projectName, ...relativePath)
+    .replace("_" + orm.toLowerCase(), "");
 
-export async function createFullProjectFlow(orm: ORM) {
+  fs.mkdirSync(path.dirname(destPath), { recursive: true });
+  const exists = fs.existsSync(srcPath);
+  if (!exists) {
+    console.log("File does not exist", srcPath);
+    return;
+  }
+  fs.copyFileSync(srcPath, destPath);
+}
+
+const appExamplePath = path.join(process.cwd(), "app_example");
+const appGeneratedPath = path.join(process.cwd(), "generated");
+
+export async function createFullProjectFlow({
+  project_name,
+  orm,
+}: CreateProjectOptions) {
   const dirFiles = fs
     .readdirSync(appExamplePath, {
       recursive: true,
@@ -32,21 +51,6 @@ export async function createFullProjectFlow(orm: ORM) {
     });
 
   for (const relativePath of dirFiles) {
-    copyFile(orm, relativePath);
+    copyFile(project_name, orm, relativePath);
   }
-}
-
-function copyFile(orm: ORM, relativePath: string[]) {
-  const srcPath = path.join(appExamplePath, ...relativePath);
-  const destPath = path
-    .join(appGeneratedPath, ...relativePath)
-    .replace("_" + orm.toLowerCase(), "");
-
-  fs.mkdirSync(path.dirname(destPath), { recursive: true });
-  const exists = fs.existsSync(srcPath);
-  if (!exists) {
-    console.log("File does not exist", srcPath);
-    return;
-  }
-  fs.copyFileSync(srcPath, destPath);
 }
