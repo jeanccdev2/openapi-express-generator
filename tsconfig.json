@@ -7,10 +7,6 @@
 
     "baseUrl": ".",
 
-    "paths": {
-      "@/*": ["./src/*"]
-    },
-
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
     "module": "nodenext",

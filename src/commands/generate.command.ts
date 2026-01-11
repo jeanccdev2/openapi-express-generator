@@ -1,6 +1,13 @@
 import inquirer from "inquirer";
+import type { ORM } from "../types/orm.js";
+import type { FileTypes } from "../types/file-types.js";
+import { generateFlow } from "../flows/generate.flow.js";
 
-import { readOpenApiFile } from "../openapi/loader.js";
+export type GenerateProjectOptions = {
+  file_types: FileTypes[];
+  orm: ORM;
+  file_path: string;
+};
 
 export async function generateRoutes() {
   const response = await inquirer.prompt([
@@ -24,14 +31,9 @@ export async function generateRoutes() {
       type: "input",
       name: "file_path",
       message: "Caminho do arquivo",
+      default: "openapi.yml",
     },
   ]);
 
-  try {
-    const openapi = await readOpenApiFile(response.file_path);
-    console.log({ ...response, openapi });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    console.error(message);
-  }
+  await generateFlow(response);
 }

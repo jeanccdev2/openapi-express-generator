@@ -1,6 +1,7 @@
-import type { CreateProjectOptions } from "@/commands/create.command.js";
-import type { ORM } from "@/types/orm.js";
-import fs, { Dirent } from "fs";
+import type { CreateProjectOptions } from "../commands/create.command.js";
+import { appExamplePath, appGeneratedPath } from "../index.js";
+import type { ORM } from "../types/orm.js";
+import fs from "fs";
 import path from "path";
 
 function copyFile(projectName: string, orm: ORM, relativePath: string[]) {
@@ -17,9 +18,6 @@ function copyFile(projectName: string, orm: ORM, relativePath: string[]) {
   }
   fs.copyFileSync(srcPath, destPath);
 }
-
-const appExamplePath = path.join(process.cwd(), "app_example");
-const appGeneratedPath = path.join(process.cwd(), "generated");
 
 export async function createFullProjectFlow({
   project_name,

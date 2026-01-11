@@ -2,8 +2,11 @@
 
 import { createProject } from "./commands/create.command.js";
 import { generateRoutes } from "./commands/generate.command.js";
+import path from "path";
 
 const args = process.argv.slice(2);
+export const appExamplePath = path.join(process.cwd(), "app_example");
+export const appGeneratedPath = path.join(process.cwd(), "generated");
 
 if (args[0] === "create") {
   createProject();
@@ -13,5 +16,6 @@ if (args[0] === "create") {
   console.log(`
 Uso:
   backend-generator create
+  backend-generator generate
 `);
 }
