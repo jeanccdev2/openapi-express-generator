@@ -45,5 +45,5 @@
     "moduleDetection": "force",
     "skipLibCheck": true
   },
-  "exclude": ["node_modules", "dist", "bin", "app_example"]
+  "exclude": ["node_modules", "dist", "bin", "app_example", "generated"]
 }
