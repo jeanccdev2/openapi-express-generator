@@ -2,10 +2,10 @@ import type { HttpMethod, OpenApiDocument } from "./types.js";
 
 type RequestBody = {};
 
-type Parameter = {
+export type Parameter = {
   name: string;
   in: "query" | "header" | "path" | "cookie";
-  type: string;
+  type: "string" | "number" | "integer" | "boolean" | "array" | "object";
   required: boolean;
 };
 
@@ -50,9 +50,16 @@ export function formatOpenApi(
         if (!operation) continue;
 
         const { parameters = null, requestBody = null } = operation;
+        const mappedParameter: Parameter[] | null =
+          parameters?.map((parameter) => ({
+            name: parameter.name,
+            in: parameter.in,
+            type: parameter.schema?.type ?? "string",
+            required: parameter.required ?? false,
+          })) ?? null;
         newRoute.methods.push({
           method,
-          parameters: null,
+          parameters: mappedParameter,
           requestBody,
         });
       }

@@ -1,10 +1,8 @@
+import { toCapitalWord } from "../utils/to-capital-word.js";
 import type { FormatOpenApiResult, Method, Route } from "../openapi/format.js";
 
 function formatRouteName(route: string) {
-  return route
-    .split(/\/|:/)
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join("");
+  return route.split(/\/|:/).map(toCapitalWord).join("");
 }
 
 function formatSchemaName(route: Route, method: Method) {
