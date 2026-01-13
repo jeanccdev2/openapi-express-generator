@@ -15,21 +15,20 @@ function formatSchemaName(route: Route, method: Method) {
 
 function getSchemas(formatOpenApiResult: FormatOpenApiResult) {
   const { module } = formatOpenApiResult;
-  let schemas = "";
+  let schemas = [];
 
   for (const route of formatOpenApiResult.routes) {
     for (const method of route.methods) {
-      schemas += ` ${formatSchemaName(route, method)}${
-        route.methods.indexOf(method) === route.methods.length - 1 &&
-        formatOpenApiResult.routes.indexOf(route) ===
-          formatOpenApiResult.routes.length - 1
-          ? ""
-          : ","
-      }`;
+      schemas.push(`${formatSchemaName(route, method)}`);
     }
   }
 
-  return `import {${schemas} } from "@${module}/schemas/${module}.schema.js";`;
+  return schemas
+    .map(
+      (schema) =>
+        `import { ${schema} } from "@${module}/schemas/${schema}.schema.js";`
+    )
+    .join("\n");
 }
 
 function getController(formatOpenApiResult: FormatOpenApiResult) {
@@ -40,18 +39,20 @@ function getController(formatOpenApiResult: FormatOpenApiResult) {
 
 function getRoutes(formatOpenApiResult: FormatOpenApiResult) {
   const { module } = formatOpenApiResult;
-  let routes = "";
+  let routes = [];
 
   for (const route of formatOpenApiResult.routes) {
     for (const method of route.methods) {
       const formattedSchemaName = formatSchemaName(route, method);
       const formattedRouteName = formatRouteName(route.route);
-      routes += `  app.${method.method}("${route.route}", ${formattedSchemaName}, ${module}Controller.${method.method}${formattedRouteName});\n`;
+      routes.push(
+        `  app.${method.method}("${route.route}", ${formattedSchemaName}, ${module}Controller.${method.method}${formattedRouteName});`
+      );
     }
   }
 
   return `const ${module}Router: FastifyPluginAsyncZod = async (app) => {
-${routes}
+${routes.join("\n")}
 };`;
 }
 
