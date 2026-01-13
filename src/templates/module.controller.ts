@@ -9,6 +9,23 @@ import { toCapitalWord } from "../utils/to-capital-word.js";
 let schemaString = "";
 let functionString = "";
 
+function castParameter(source: string, type: Parameter["type"]) {
+  switch (type) {
+    case "number":
+    case "integer":
+      return `Number(${source})`;
+    case "boolean":
+      return `(${source} === "true" || ${source} === true)`;
+    case "array":
+      return `Array.isArray(${source}) ? ${source} : String(${source}).split(",")`;
+    case "object":
+      return `typeof ${source} === "string" ? JSON.parse(${source}) : ${source}`;
+    case "string":
+    default:
+      return source;
+  }
+}
+
 function formatRouteName(route: string) {
   return route.split(/\/|:/).map(toCapitalWord).join("");
 }
@@ -53,24 +70,65 @@ function getFunctions(formatOpenApiResult: FormatOpenApiResult) {
   let functions: {
     fnName: string;
     schemaName: string;
-    parameters: Parameter[];
+    hasParams: boolean;
+    hasQuery: boolean;
+    hasBody: boolean;
     response: {
       statusCode: number;
       message: string;
     };
   }[] = [];
 
+  for (const route of formatOpenApiResult.routes) {
+    for (const method of route.methods) {
+      const formattedRouteName = formatRouteName(route.route);
+      const fnName = `${method.method}${formattedRouteName}`;
+      functions.push({
+        fnName,
+        schemaName: formatSchemaName(route, method, true),
+        hasParams: Boolean(method.parameters?.filter((p) => p.in === "path")),
+        hasQuery: Boolean(method.parameters?.filter((p) => p.in === "query")),
+        hasBody: Boolean(method.requestBody),
+        response: {
+          statusCode:
+            method.method === "post"
+              ? 201
+              : method.method === "delete"
+              ? 200
+              : 200,
+          message: "Sucesso",
+        },
+      });
+    }
+  }
+
   functionString = functions
-    .map(
-      (fn) =>
-        `async function ${fn.fnName}(req: FastifyRequest<${fn.schemaName}>) {
-  return new ApiResponse(
+    .map((fn) => {
+      const lines: string[] = [];
+      const serviceArgs: string[] = [];
+
+      if (fn.hasParams) {
+        serviceArgs.push("req.params");
+      }
+
+      if (fn.hasBody) {
+        serviceArgs.push("req.body");
+      }
+
+      if (fn.hasQuery) {
+        serviceArgs.push("req.query");
+      }
+
+      return `async function ${fn.fnName}(req: FastifyRequest<${
+        fn.schemaName
+      }>) {
+${lines.join("\n")}${lines.length ? "\n" : ""}  return new ApiResponse(
     ${fn.response.statusCode},
     "${fn.response.message}",
-    await ${module}Service.${fn.fnName}(req.body),
+    await ${module}Service.${fn.fnName}(${serviceArgs.join(", ")}),
   );
-}`
-    )
+}`;
+    })
     .join("\n\n");
 }
 
@@ -86,46 +144,17 @@ ${schemaString}
 import { ApiResponse } from "@/shared/api-response.js";
 import ${module}Service from "@${module}/services/${module}.service.js";
 
-async function getExample(req: FastifyRequest<GetExampleSchema>) {
-  const id = Number(req.params.id);
-  return new ApiResponse(
-    200,
-    "Exemplo encontrado com sucesso",
-    await exampleService.getExample(id),
-  );
-}
-
-async function postExample(req: FastifyRequest<PostExampleSchema>) {
-  return new ApiResponse(
-    201,
-    "Exemplo criado com sucesso",
-    await exampleService.postExample(req.body),
-  );
-}
-
-async function updateExample(req: FastifyRequest<UpdateExampleSchema>) {
-  const id = Number(req.params.id);
-  return new ApiResponse(
-    201,
-    "Exemplo atualizado com sucesso",
-    await exampleService.updateExample(id, req.body),
-  );
-}
-
-async function deleteExample(req: FastifyRequest<DeleteExampleSchema>) {
-  const id = Number(req.params.id);
-  return new ApiResponse(
-    201,
-    "Exemplo deletado com sucesso",
-    await exampleService.deleteExample(id),
-  );
-}
+${functionString}
 
 export default {
-  getExample,
-  postExample,
-  updateExample,
-  deleteExample,
+${formatOpenApiResult.routes
+  .flatMap((route) =>
+    route.methods.map((method) => {
+      const fnName = `${method.method}${formatRouteName(route.route)}`;
+      return `  ${fnName},`;
+    })
+  )
+  .join("\n")}
 };
 `;
 }
