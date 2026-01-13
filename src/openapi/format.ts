@@ -9,13 +9,13 @@ type Parameter = {
   required: boolean;
 };
 
-type Method = {
+export type Method = {
   method: HttpMethod;
   parameters: Parameter[] | null;
   requestBody: RequestBody | null;
 };
 
-type Route = {
+export type Route = {
   route: string;
   methods: Method[];
 };
