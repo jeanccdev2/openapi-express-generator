@@ -21,8 +21,6 @@ function formatRequestBody(
 
   const body = mapSchemaType(schema);
 
-  console.log("body", body);
-
   return body;
 }
 

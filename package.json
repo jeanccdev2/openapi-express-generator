@@ -1,17 +1,18 @@
 {
-  "name": "backend-generator",
+  "name": "openapi-express-generator",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "type": "module",
   "bin": {
-    "backend-generator": "dist/index.js"
+    "openapi-express-generator": "dist/index.js",
+    "oe-generator": "dist/index.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "create": "tsc && npx backend-generator create",
-    "generate": "tsc && npx backend-generator generate"
+    "create": "tsc && npx oe-generator create",
+    "generate": "tsc && npx oe-generator generate"
   },
   "keywords": [],
   "author": "",

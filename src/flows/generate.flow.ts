@@ -21,10 +21,14 @@ export async function generateFlow(options: GenerateProjectOptions) {
     const modules = getModules();
     const formatOpenApiResult = formatOpenApi(openapi, modules);
     generateDefaultFiles();
-    generateRoutes(modules);
-    generateIndexRoutes(formatOpenApiResult);
-    generateControllers(formatOpenApiResult);
-    generateServices(formatOpenApiResult);
+    if (options.file_types.includes("Routes")) {
+      generateRoutes(modules);
+      generateIndexRoutes(formatOpenApiResult);
+    }
+    if (options.file_types.includes("Controllers"))
+      generateControllers(formatOpenApiResult);
+    if (options.file_types.includes("Services"))
+      generateServices(formatOpenApiResult);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error(err, message);
@@ -88,7 +92,16 @@ function generateControllers(formatOpenApiResult: FormatOpenApiResult[]) {
   for (const module of formatOpenApiResult) {
     const { module: moduleName } = module;
     const controller = moduleControllerTemplate(module);
-    writeFile(["src", "modules", moduleName, "controllers", `${moduleName}.controller.ts`], controller);
+    writeFile(
+      [
+        "src",
+        "modules",
+        moduleName,
+        "controllers",
+        `${moduleName}.controller.ts`,
+      ],
+      controller
+    );
   }
 }
 
@@ -96,7 +109,10 @@ function generateServices(formatOpenApiResult: FormatOpenApiResult[]) {
   for (const module of formatOpenApiResult) {
     const { module: moduleName } = module;
     const service = moduleServiceTemplate(module);
-    writeFile(["src", "modules", moduleName, "services", `${moduleName}.service.ts`], service);
+    writeFile(
+      ["src", "modules", moduleName, "services", `${moduleName}.service.ts`],
+      service
+    );
   }
 }
 
