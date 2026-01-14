@@ -59,6 +59,16 @@ components:
         - productId
         - quantity
       properties:
+        teste:
+          type: object
+          required:
+            - teste2
+          properties:
+            teste2:
+              type: object
+              properties:
+                teste3:
+                  type: string
         productId:
           type: integer
         quantity:

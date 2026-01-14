@@ -20,6 +20,38 @@ function formatFunctionName(route: Route, method: Method) {
   return `${method.method}${formattedRoute}`;
 }
 
+function formatObjectType(requestBody: RequestBody, indentLevel: number) {
+  switch (requestBody.type) {
+    case "object":
+      return `{\n${formatRequestBodyType(
+        requestBody,
+        indentLevel + 1
+      )}${"\t".repeat(indentLevel)}}`;
+    default:
+      return requestBody.type;
+  }
+}
+
+function formatRequestBodyType(
+  requestBody: RequestBody,
+  indentLevel: number = 1
+) {
+  let bodyString = "";
+
+  if (requestBody.type === "object") {
+    const { required, properties } = requestBody;
+
+    for (const property in properties) {
+      const isRequired = required.includes(property);
+      bodyString += `${"\t".repeat(indentLevel)}${property}${
+        isRequired ? "" : "?"
+      }: ${formatObjectType(properties[property]!, indentLevel)};\n`;
+    }
+  }
+
+  return bodyString;
+}
+
 function getFunctions(formatOpenApiResult: FormatOpenApiResult) {
   let functions: {
     fnName: string;
@@ -63,15 +95,17 @@ function getFunctions(formatOpenApiResult: FormatOpenApiResult) {
 
       if (fn.body) {
         const typeName = toCapitalWord(fn.fnName) + "Body";
+        const bodyString = formatRequestBodyType(fn.body);
+
         const type = `type ${typeName} = {
-  ${fn.body}
+  ${bodyString}
 }`;
+
         types.push(type);
         serviceArgs.push(`body: ${typeName}`);
       }
 
       if (fn.query && fn.query.length > 0) {
-        console.log(fn.query);
         const typeName = toCapitalWord(fn.fnName) + "Query";
         const type = `type ${typeName} = {
   ${fn.query
