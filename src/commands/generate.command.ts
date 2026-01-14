@@ -4,6 +4,7 @@ import type { FileTypes } from "../types/file-types.js";
 import { generateFlow } from "../flows/generate.flow.js";
 
 export type GenerateProjectOptions = {
+  project_name: string;
   file_types: FileTypes[];
   orm: ORM;
   file_path: string;
@@ -11,6 +12,12 @@ export type GenerateProjectOptions = {
 
 export async function generateRoutes() {
   const response = await inquirer.prompt([
+    {
+      type: "input",
+      name: "project_name",
+      message: "Nome do Projeto",
+      default: "my-app",
+    },
     {
       type: "checkbox",
       name: "file_types",
@@ -36,4 +43,7 @@ export async function generateRoutes() {
   ]);
 
   await generateFlow(response);
+
+  console.log("\n✅ Geração finalizada com sucesso!\n");
+  console.log(`\nProjeto gerado na pasta generated/${response.project_name}\n`);
 }
