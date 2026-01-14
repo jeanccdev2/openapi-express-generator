@@ -1,6 +1,6 @@
 import type { HttpMethod, OpenApiDocument } from "./types.js";
 
-type RequestBody = {};
+export type RequestBody = {};
 
 export type Parameter = {
   name: string;

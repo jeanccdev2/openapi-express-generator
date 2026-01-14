@@ -9,23 +9,6 @@ import { toCapitalWord } from "../utils/to-capital-word.js";
 let schemaString = "";
 let functionString = "";
 
-function castParameter(source: string, type: Parameter["type"]) {
-  switch (type) {
-    case "number":
-    case "integer":
-      return `Number(${source})`;
-    case "boolean":
-      return `(${source} === "true" || ${source} === true)`;
-    case "array":
-      return `Array.isArray(${source}) ? ${source} : String(${source}).split(",")`;
-    case "object":
-      return `typeof ${source} === "string" ? JSON.parse(${source}) : ${source}`;
-    case "string":
-    default:
-      return source;
-  }
-}
-
 function formatRouteName(route: string) {
   return route.split(/\/|:/).map(toCapitalWord).join("");
 }

@@ -2,7 +2,7 @@ import {
   ExampleEntity,
   type CreateExampleEntity,
   type UpdateExampleEntity,
-} from "../entities_typeorm/example.entity.js";
+} from "@example/entities/example.entity.js";
 
 async function getExample(id: number) {
   return await ExampleEntity.findOne({ where: { id } });

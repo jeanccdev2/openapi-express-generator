@@ -8,6 +8,7 @@ import { appExamplePath, appGeneratedPath } from "../index.js";
 import { formatOpenApi, type FormatOpenApiResult } from "../openapi/format.js";
 import { indexRoutesTemplate } from "../templates/index.routes.js";
 import { moduleControllerTemplate } from "../templates/module.controller.js";
+import { moduleServiceTemplate } from "../templates/module.service.js";
 
 let openapi: OpenApiDocument;
 
@@ -23,6 +24,7 @@ export async function generateFlow(options: GenerateProjectOptions) {
     generateRoutes(modules);
     generateIndexRoutes(formatOpenApiResult);
     generateControllers(formatOpenApiResult);
+    generateServices(formatOpenApiResult);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error(err, message);
@@ -87,6 +89,14 @@ function generateControllers(formatOpenApiResult: FormatOpenApiResult[]) {
     const { module: moduleName } = module;
     const controller = moduleControllerTemplate(module);
     writeFile(["src", "modules", moduleName, "controllers", `${moduleName}.controller.ts`], controller);
+  }
+}
+
+function generateServices(formatOpenApiResult: FormatOpenApiResult[]) {
+  for (const module of formatOpenApiResult) {
+    const { module: moduleName } = module;
+    const service = moduleServiceTemplate(module);
+    writeFile(["src", "modules", moduleName, "services", `${moduleName}.service.ts`], service);
   }
 }
 
