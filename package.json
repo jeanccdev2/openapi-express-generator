@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "inquirer": "^13.1.0",
+    "typeorm": "^0.3.28",
     "yaml": "^2.8.0"
   }
 }

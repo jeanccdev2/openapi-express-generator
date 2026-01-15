@@ -1,27 +1,37 @@
 import type { HttpMethod, OpenApiDocument } from "./types.js";
-import type { RequestBodyObject, SchemaObject } from "./types.js";
+import type { SchemaObject } from "./types.js";
 
-function formatRequestBody(
+export function formatRequestBody(
   openapi: OpenApiDocument,
-  requestBody: RequestBodyObject | null
+  schema: SchemaObject | null
 ): RequestBody | null {
-  if (!requestBody) return null;
-  const json = requestBody.content?.["application/json"];
-  if (!json?.schema) return null;
-
-  let schema: SchemaObject | null = json.schema;
+  if (!schema) return null;
   if (schema.$ref) {
-    const splitRef = schema.$ref
-      .replace("#/components/schemas/", "")
-      .split("/");
-    schema = openapi?.components?.schemas?.[splitRef.join("/")] || null;
+    const schemaName = schema.$ref.replace("#/components/schemas/", "");
+    schema = openapi?.components?.schemas?.[schemaName] || null;
+    if (schema) schema.name = schemaName;
   }
 
   if (!schema) return null;
-
   const body = mapSchemaType(schema);
 
   return body;
+}
+
+function mapSchemaType(schema: SchemaObject): RequestBody | null {
+  switch (schema.type) {
+    case "integer":
+    case "number":
+      return { type: "number", description: schema.description || "" };
+    case "boolean":
+      return { type: "boolean", description: schema.description || "" };
+    case "object":
+      return mapObjectSchemaType(schema);
+    // case "array":
+    //   return { type: "array", items: mapSchemaType(schema.items!) };
+    default:
+      return { type: "string", description: schema.description || "" };
+  }
 }
 
 function mapObjectSchemaType(schema: SchemaObject): ObjectRequestBody | null {
@@ -34,36 +44,25 @@ function mapObjectSchemaType(schema: SchemaObject): ObjectRequestBody | null {
   }
 
   return {
+    name: schema.name,
     type: schema.type,
     required: schema.required || [],
     properties: mappedProperties,
+    ref: schema.$ref,
   };
-}
-
-function mapSchemaType(schema: SchemaObject): RequestBody | null {
-  switch (schema.type) {
-    case "integer":
-    case "number":
-      return { type: "number" };
-    case "boolean":
-      return { type: "boolean" };
-    case "object":
-      return mapObjectSchemaType(schema);
-    // case "array":
-    //   return { type: "array", items: mapSchemaType(schema.items!) };
-    default:
-      return { type: "string" };
-  }
 }
 
 type GenericRequestBody = {
   type: "boolean" | "integer" | "number" | "string";
+  description: string;
 };
 
-type ObjectRequestBody = {
+export type ObjectRequestBody = {
+  name?: string;
   type: "object";
   required: string[];
   properties: Record<string, RequestBody>;
+  ref?: string;
 };
 
 type ArrayRequestBody = {
@@ -125,7 +124,10 @@ export function formatOpenApi(
 
         const { parameters = null, requestBody = null } = operation;
 
-        const formattedRequestBody = formatRequestBody(openapi, requestBody);
+        const formattedRequestBody = formatRequestBody(
+          openapi,
+          requestBody?.content?.["application/json"]?.schema ?? null
+        );
 
         const mappedParameter: Parameter[] | null =
           parameters?.map((parameter) => ({

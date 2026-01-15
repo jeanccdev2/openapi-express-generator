@@ -161,6 +161,7 @@ export type HeaderObject = Omit<ParameterObject, "name" | "in">;
 /* ================= SCHEMAS ================= */
 
 export type SchemaObject = {
+  name?: string;
   type?: "string" | "number" | "integer" | "boolean" | "array" | "object";
   format?: string;
 

@@ -9,6 +9,7 @@ import { formatOpenApi, type FormatOpenApiResult } from "../openapi/format.js";
 import { indexRoutesTemplate } from "../templates/index.routes.js";
 import { moduleControllerTemplate } from "../templates/module.controller.js";
 import { moduleServiceTemplate } from "../templates/module.service.js";
+import { moduleEntityTypeormTemplate } from "../templates/module.entity-typeorm.js";
 
 let openapi: OpenApiDocument;
 
@@ -29,6 +30,9 @@ export async function generateFlow(options: GenerateProjectOptions) {
       generateControllers(formatOpenApiResult);
     if (options.file_types.includes("Services"))
       generateServices(formatOpenApiResult);
+    if (options.file_types.includes("Models") && options.orm == "TypeORM") {
+      generateEntitiesTypeorm(formatOpenApiResult);
+    }
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error(err, message);
@@ -112,6 +116,17 @@ function generateServices(formatOpenApiResult: FormatOpenApiResult[]) {
     writeFile(
       ["src", "modules", moduleName, "services", `${moduleName}.service.ts`],
       service
+    );
+  }
+}
+
+function generateEntitiesTypeorm(formatOpenApiResult: FormatOpenApiResult[]) {
+  for (const module of formatOpenApiResult) {
+    const { module: moduleName } = module;
+    const entity = moduleEntityTypeormTemplate(module, openapi);
+    writeFile(
+      ["src", "modules", moduleName, "entities", `${moduleName}.entity.ts`],
+      entity
     );
   }
 }
