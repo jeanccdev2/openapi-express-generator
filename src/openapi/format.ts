@@ -84,6 +84,7 @@ export type Parameter = {
 
 export type Method = {
   method: HttpMethod;
+  jwt?: boolean;
   parameters: Parameter[] | null;
   requestBody: RequestBody | null;
 };
@@ -139,6 +140,7 @@ export function formatOpenApi(
 
         newRoute.methods.push({
           method,
+          jwt: !!operation.security?.[0]?.BearerAuth,
           parameters: mappedParameter,
           requestBody: formattedRequestBody,
         });

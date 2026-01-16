@@ -43,8 +43,13 @@ function getRoutes(formatOpenApiResult: FormatOpenApiResult) {
     for (const method of route.methods) {
       const formattedSchemaName = formatSchemaName(route, method);
       const formattedRouteName = formatRouteName(route.route);
+      const jwt = method.jwt ? ", jwt" : "";
       routes.push(
-        `  app.${method.method}("${route.route}", ${formattedSchemaName}, ${module}Controller.${method.method}${formattedRouteName});`
+        `  app.${method.method}("${
+          route.route
+        }", { ...${formattedSchemaName}, preHandler: [${
+          jwt ? "jwtMiddleware" : ""
+        }] }, ${module}Controller.${method.method}${formattedRouteName});`
       );
     }
   }
@@ -56,6 +61,7 @@ ${routes.join("\n")}
 
 export function indexRoutesTemplate(formatOpenApiResult: FormatOpenApiResult) {
   return `import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
+import jwtMiddleware from "@/shared/jwt-middleware.js";
 ${getSchemas(formatOpenApiResult)}
 ${getController(formatOpenApiResult)}
 
