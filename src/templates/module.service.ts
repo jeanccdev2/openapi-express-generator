@@ -25,7 +25,7 @@ function formatObjectType(requestBody: RequestBody, indentLevel: number) {
     case "object":
       return `{\n${formatRequestBodyType(
         requestBody,
-        indentLevel + 1
+        indentLevel + 1,
       )}${"\t".repeat(indentLevel)}}`;
     default:
       return requestBody.type;
@@ -34,7 +34,7 @@ function formatObjectType(requestBody: RequestBody, indentLevel: number) {
 
 function formatRequestBodyType(
   requestBody: RequestBody,
-  indentLevel: number = 1
+  indentLevel: number = 1,
 ) {
   let bodyString = "";
 
@@ -43,6 +43,11 @@ function formatRequestBodyType(
 
     for (const property in properties) {
       const isRequired = required.includes(property);
+      if (
+        property.startsWith("teste")
+      ) {
+        console.log(property, indentLevel);
+      }
       bodyString += `${"\t".repeat(indentLevel)}${property}${
         isRequired ? "" : "?"
       }: ${formatObjectType(properties[property]!, indentLevel)};\n`;
@@ -98,7 +103,7 @@ function getFunctions(formatOpenApiResult: FormatOpenApiResult) {
         const bodyString = formatRequestBodyType(fn.body);
 
         const type = `type ${typeName} = {
-  ${bodyString}
+${bodyString}
 }`;
 
         types.push(type);
@@ -132,7 +137,7 @@ async function ${fn.fnName}(${serviceString}) {
 }
 
 export function moduleServiceTemplate(
-  formatOpenApiResult: FormatOpenApiResult
+  formatOpenApiResult: FormatOpenApiResult,
 ) {
   getFunctions(formatOpenApiResult);
 
@@ -144,7 +149,7 @@ ${formatOpenApiResult.routes
     route.methods.map((method) => {
       const fnName = `${method.method}${formatRouteName(route.route)}`;
       return `  ${fnName},`;
-    })
+    }),
   )
   .join("\n")}
 };

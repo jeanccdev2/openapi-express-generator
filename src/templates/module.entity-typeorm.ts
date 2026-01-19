@@ -20,7 +20,6 @@ type Column = {
 let columnsString = "";
 
 function generateColumns(columns: Column[]) {
-  console.log("columns", columns);
   columnsString = columns
     .filter((column) => !!column.name)
     .map((column) => {
@@ -59,7 +58,6 @@ function generateColumns(columns: Column[]) {
     })
     .join("\n\n");
 
-  console.log("columnsString", columnsString);
 }
 function getColumns(entity: ObjectRequestBody): Column[] {
   const columns: Column[] = [];
@@ -69,7 +67,6 @@ function getColumns(entity: ObjectRequestBody): Column[] {
     if (prop.type === "object" || prop.type === "array") {
       continue;
     }
-    console.log("prop", prop);
     const arrayDescription = prop.description.split("_");
     let type: ColumnType | undefined = (
       arrayDescription.find((item) => item.startsWith("type:")) || undefined
@@ -114,8 +111,6 @@ function getColumns(entity: ObjectRequestBody): Column[] {
       default: defaultVal,
       unique,
     };
-
-    console.log(column);
 
     columns.push(column);
   }
@@ -167,6 +162,5 @@ ${columnsString}
 export type Create${capitalModule}Entity = DeepPartial<${capitalModule}Entity>;
 
 export type Update${capitalModule}Entity = Partial<Create${capitalModule}Entity>;
-
 `;
 }
