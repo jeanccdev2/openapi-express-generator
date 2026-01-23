@@ -1,11 +1,11 @@
 {
-  "name": "openapi-express-generator",
+  "name": "openapi-fastify-generator",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "type": "module",
   "bin": {
-    "openapi-express-generator": "dist/index.js",
+    "openapi-fastify-generator": "dist/index.js",
     "oe-generator": "dist/index.js"
   },
   "scripts": {
